@@ -1,0 +1,12 @@
+# Local-only: planning docs and source PDF (not published)
+docs/
+*.pdf
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Training outputs (models, logs, videos)
+runs/
