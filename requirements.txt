@@ -1,0 +1,6 @@
+gymnasium[box2d]>=1.0
+stable-baselines3>=2.4
+moviepy
+imageio
+tensorboard
+pytest
