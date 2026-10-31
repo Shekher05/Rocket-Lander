@@ -1,6 +1,10 @@
-# Local-only: planning docs and source PDF (not published)
+# Local-only: planning docs, source PDF and Claude instructions (not published)
 docs/
 *.pdf
+CLAUDE.md
+
+# Stray empty file in the repo root
+/GIF
 
 # Python
 .venv/
