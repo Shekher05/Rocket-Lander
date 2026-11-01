@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import gymnasium as gym
@@ -10,7 +11,7 @@ from gymnasium.wrappers import RecordVideo
 from stable_baselines3 import PPO
 
 from rocket_land.config import ENV_ID, EVAL_SEED_BASE
-from rocket_land.outcomes import classify, summarize
+from rocket_land.outcomes import LEFT_LEG, RIGHT_LEG, classify, summarize
 
 PASS_SCORE = 200  # LunarLander counts as solved at a mean score of 200
 RECORD_EPISODES = 3  # --record saves the first few episodes
@@ -69,6 +70,7 @@ def main():
         obs, _ = env.reset(seed=EVAL_SEED_BASE + i)
         score = 0.0
         length = 0
+        steps_since_contact = math.inf  # frames since any leg last touched
         done = False
         if args.gif and i == 0:
             gif_frames.append(env.render())
@@ -77,10 +79,11 @@ def main():
             obs, reward, terminated, truncated, _ = env.step(action)
             score += reward
             length += 1
+            steps_since_contact = 0 if max(obs[LEFT_LEG], obs[RIGHT_LEG]) >= 0.5 else steps_since_contact + 1
             done = terminated or truncated
             if args.gif and i == 0:
                 gif_frames.append(env.render())
-        outcome = classify(terminated, truncated, reward, obs)  # reward and obs are the last step's
+        outcome = classify(terminated, truncated, reward, obs, steps_since_contact)  # reward and obs are the last step's
         episodes.append({"score": score, "length": length, "outcome": outcome})
     env.close()
     if args.gif:
@@ -104,6 +107,8 @@ def main():
     print(f"  landed {summary['landed_rate']:.0%}  crashed {summary['crash_rate']:.0%}  "
           f"hover {summary['hover_rate']:.0%}  grounded_timeout {summary['grounded_timeout_rate']:.0%}  "
           f"other {summary['other_rate']:.0%}")
+    print(f"  farming {summary['farming_rate']:.0%} (hover + grounded_timeout)  "
+          f"at time limit {summary['at_time_limit_rate']:.0%}")
     print(f"  mean episode length: {summary['mean_ep_len']:.0f}")
     print(f"Saved: {args.run / 'eval.json'}")
     if args.record:

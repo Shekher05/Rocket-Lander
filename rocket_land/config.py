@@ -24,6 +24,9 @@ ACTION_NAMES = ("noop", "fire_left", "fire_main", "fire_right")
 N_ENVS = 16  # parallel copies of the env
 TOTAL_TIMESTEPS = 1_000_000
 
+# LunarLander truncates an episode at this many frames
+TIME_LIMIT = 1000
+
 # Evaluation episode i resets with seed EVAL_SEED_BASE + i
 EVAL_SEED_BASE = 10_000
 
@@ -52,9 +55,12 @@ SLOW_MAX_SPEED = 0.3  # observation units, speed = hypot(vx, vy)
 # Outcome classification fallback (observation units). The Box2D leg-contact
 # sensors can flicker at rest, so a lander sitting level on the pad may report
 # only one leg down. A truncated episode that ends below GROUND_Y_MAX and slower
-# than GROUND_SPEED_MAX is treated as grounded even if the legs disagree.
+# than GROUND_SPEED_MAX is treated as grounded even if the legs disagree, but only
+# if a leg touched down within the last GROUND_CONTACT_WINDOW frames (so a low
+# hover in the air still counts as a hover).
 GROUND_Y_MAX = 0.05
 GROUND_SPEED_MAX = 0.05
+GROUND_CONTACT_WINDOW = 50  # frames, counting the final one
 
 # Project root (the folder above this package) and where training output goes
 ROOT = Path(__file__).resolve().parent.parent
