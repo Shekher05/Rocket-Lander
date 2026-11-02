@@ -68,4 +68,4 @@ python -m rocket_land.report                                   # writes results/
 
 ## Credit
 
-The idea and the reward rules come from *Training an AI to land a rocket with reward shaping: how it works and how to build it* by Hari (@harixganesh). This repo is a separate re-implementation of that setup and is not affiliated with the author.
+The idea and the reward rules come from *Training an AI to land a rocket with reward shaping: how it works and how to build it*.
